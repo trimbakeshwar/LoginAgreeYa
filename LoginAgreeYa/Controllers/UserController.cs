@@ -12,9 +12,11 @@ namespace LoginAgreeYa.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
-        public UserController(IUserService userService)
+        private readonly ILogger<UserController> _logger;
+        public UserController(IUserService userService, ILogger<UserController> logger)
         {
             _userService = userService;
+            _logger = logger;
         }
         // GET: api/<UserController>
         [HttpGet]
@@ -22,7 +24,9 @@ namespace LoginAgreeYa.Controllers
         [Route("GetAllUser")]
         public async Task<IActionResult> GetAllUser()
         {
+            _logger.LogInformation("******** call GetAllUser Api *********");
             return Ok( await _userService.GetAllUser().ConfigureAwait(false));
+
         }
 
         // GET api/<UserController>/5
@@ -31,6 +35,7 @@ namespace LoginAgreeYa.Controllers
         [Route("GetUser/{id}")]
         public async Task<IActionResult> GetUser(int id)
         {
+            _logger.LogInformation("******** call GetUser Api *********");
             return Ok(await _userService.GetUser(id).ConfigureAwait(false));
         }
 
@@ -39,6 +44,7 @@ namespace LoginAgreeYa.Controllers
         [Route("AddUser")]
         public async Task<IActionResult> AddUser([FromBody] RegistrationModel user)
         {
+            _logger.LogInformation("******** call AddUser Api *********");
             return Ok(await _userService.AddUser(user).ConfigureAwait(false));
         }
 
@@ -47,6 +53,7 @@ namespace LoginAgreeYa.Controllers
         [Route("UpdateUser/{id}")]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] RegistrationModel user)
         {
+            _logger.LogInformation("******** call UpdateUser Api *********");
             return Ok(await _userService.UpdateUser(user,id).ConfigureAwait(false));
         }
 
@@ -55,6 +62,7 @@ namespace LoginAgreeYa.Controllers
         [Route("DeleteUser/{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
+            _logger.LogInformation("******** call DeleteUser Api *********");
             return Ok(await _userService.DeleteUser(id).ConfigureAwait(false));
         }
     }
