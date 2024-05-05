@@ -14,7 +14,8 @@ namespace LoginAgreeYa.Model
         public string? Password { set; get; }
         [RegularExpression(@"^[a-z0-9_-]{3,15}$", ErrorMessage = "Please enter a valid user Name")]
         public string? LoginUser { set; get; }
-        [RegularExpression(@"^((.[A-Z]+[a-z]*[0-9]*)|(.[A-Z]*[a-z]+[0-9]*)|(.[A-Z]*[a-z]*[0-9]+)?)?@.co(.[a-z]{2,})?$", ErrorMessage = "Please enter a valid email address")]
+        [Required]
+        [EmailAddress]
         public string? Email { set; get; }
         [RegularExpression(@"^[6-9]\d{9}$", ErrorMessage = "Please enter a valid Mobile Number")]
         public string? PhoneNumber { set; get; }
