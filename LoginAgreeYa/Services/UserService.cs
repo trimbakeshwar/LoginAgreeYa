@@ -27,6 +27,11 @@ namespace LoginAgreeYa.Services
             return await _UserRepo.DeleteUser(id).ConfigureAwait(false);
         }
 
+        public ResposeModel GenerateToken(string userEmail)
+        {
+            return _UserRepo.GenerateToken(userEmail);
+        }
+
         public async Task<ResposeModel> GetAllUser()
         {
             _logger.LogInformation("******** call GetAllUser Service *********");
@@ -39,10 +44,23 @@ namespace LoginAgreeYa.Services
             return await  _UserRepo.GetUser(id).ConfigureAwait(false);
         }
 
+        public async Task<ResposeModel> Login(string username, string password)
+        {
+            return await _UserRepo.Login(username,password).ConfigureAwait(false);
+        }
+    
+
         public async Task<ResposeModel> UpdateUser(RegistrationModel registrationModel, int id)
         {
             _logger.LogInformation("******** call UpdateUser Service *********");
             return await _UserRepo.UpdateUser(registrationModel, id).ConfigureAwait(false);
         }
+
+        public  ResposeModel Validating(string token)
+        {
+            return  _UserRepo.Validating(token);
+        }
+
+       
     }
 }

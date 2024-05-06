@@ -65,5 +65,23 @@ namespace LoginAgreeYa.Controllers
             _logger.LogInformation("******** call DeleteUser Api *********");
             return Ok(await _userService.DeleteUser(id).ConfigureAwait(false));
         }
+        [HttpPost]
+        [Route("Validating")]
+        public IActionResult Validating(string token)
+        {
+            return Ok( _userService.Validating(token));
+        }
+        [HttpPost]
+        [Route("GenerateToken")]
+        public IActionResult GenerateToken(string userEmail)
+        {
+            return Ok( _userService.GenerateToken(userEmail));
+        }
+        [HttpPost]
+        [Route("Login")]
+        public IActionResult Login (string username, string password)
+        {
+            return Ok(_userService.Login( username,  password));
+        }
     }
 }

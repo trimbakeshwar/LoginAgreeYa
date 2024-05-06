@@ -2,11 +2,22 @@
 using LoginAgreeYa.Controllers;
 using LoginAgreeYa.Model;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Security.Principal;
+using System.Text;
 
 namespace LoginAgreeYa.Repository
 {
     public class UserRepo : IUserRepo
     {
+        public static readonly SymmetricSecurityKey SIGNINGKEY = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(UserRepo.SECRETKEY));
+
+        /// <summary>
+        /// The secret key
+        /// </summary>
+        private const string SECRETKEY = "SuperSecretKey@345fghhhhhhhhhhhhhhhhhhhhhhhhhhhhhfggggggg";
         private readonly AppDbContexts _db;
         private readonly ILogger<UserRepo> _logger;
         public UserRepo(AppDbContexts db,ILogger<UserRepo> logger)
@@ -204,6 +215,127 @@ namespace LoginAgreeYa.Repository
                 resposeModel.StatusCode = 501;
                 resposeModel.Results = null;
                 _logger.LogError("error in UpdateUser method : {resposeModel} ", resposeModel);
+            }
+            return resposeModel;
+        }
+        public ResposeModel GenerateToken(string userEmail)
+        {
+            ResposeModel resposeModel = new ResposeModel();
+            try
+            {
+                var token = new JwtSecurityToken(
+                claims: new Claim[]
+                {
+                    new Claim(ClaimTypes.Name, userEmail)
+                },
+                notBefore: new DateTimeOffset(DateTime.Now).DateTime,
+                expires: new DateTimeOffset(DateTime.Now.AddMinutes(60)).DateTime,
+                signingCredentials: new SigningCredentials(SIGNINGKEY, SecurityAlgorithms.HmacSha256));
+
+                var result =  new JwtSecurityTokenHandler().WriteToken(token);
+                if (result != null)
+                {
+                    resposeModel.IsSuccess = true;
+                    resposeModel.StatusCode = 200;
+                    resposeModel.Message = "Token genrated Successfully";
+                    resposeModel.Results = result;
+                }
+                else
+                {
+                    resposeModel.IsSuccess = false;
+                    resposeModel.StatusCode = 200;
+                    resposeModel.Message = "Token genration fail ";
+                    resposeModel.Results = result;
+                }
+            }
+            catch (Exception ex)
+            {
+                resposeModel.IsSuccess = false;
+                resposeModel.StatusCode = 200;
+                resposeModel.Message = ex.Message;
+                resposeModel.Results = null;
+            }
+            return resposeModel;
+        }
+        public ResposeModel Validating(string token)
+        {
+            ResposeModel resposeModel = new ResposeModel();
+            try
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var jwtToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
+
+                if (jwtToken == null)
+                    return null;
+
+                var symmetricKey = Encoding.UTF8.GetBytes(SECRETKEY);
+
+                var validationParameters = new TokenValidationParameters
+                {
+                    RequireExpirationTime = true,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    IssuerSigningKey = SIGNINGKEY
+                };
+
+                var principal = tokenHandler.ValidateToken(token, validationParameters, out var validatedToken);
+                if (principal != null)
+                {
+                    resposeModel.IsSuccess = true;
+                    resposeModel.StatusCode = 200;
+                    resposeModel.Message = "Token genrated Successfully";
+                    resposeModel.Results = principal;
+                }
+                else
+                {
+                    resposeModel.IsSuccess = false;
+                    resposeModel.StatusCode = 200;
+                    resposeModel.Message = "Token genration fail ";
+                    resposeModel.Results = principal;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                resposeModel.IsSuccess = false;
+                resposeModel.StatusCode = 501;
+                resposeModel.Message = ex.Message;
+                resposeModel.Results = null;
+               
+            }
+            return resposeModel;
+        }
+        public async Task<ResposeModel> Login(string username, string password)
+        {
+            ResposeModel resposeModel = new ResposeModel();
+            try
+            {
+                var result = await _db.Registration.Where(x => x.LoginUser == username && x.Password == password).FirstOrDefaultAsync().ConfigureAwait(false);
+                _logger.LogInformation("find user by id from FindAsync : {result} ", result);
+                if (result?.FirstName == null)
+                {
+                    resposeModel.IsSuccess = false;
+                    resposeModel.Message = "please check Username and Password";
+                    resposeModel.StatusCode = 200;
+                    resposeModel.Results = result;
+                    _logger.LogInformation("get Response from GetUser method : {resposeModel} ", resposeModel);
+                }
+                else
+                {
+                    resposeModel.IsSuccess = true;
+                    resposeModel.Message = "user Login Successfully";
+                    resposeModel.StatusCode = 200;
+                    resposeModel.Results = result;
+                    _logger.LogInformation("get Response from GetUser method : {resposeModel} ", resposeModel);
+                }
+            } catch (Exception ex)
+            {
+                resposeModel.IsSuccess = false;
+                resposeModel.StatusCode = 501;
+                resposeModel.Message = ex.Message;
+                resposeModel.Results = null;
+
+
             }
             return resposeModel;
         }
