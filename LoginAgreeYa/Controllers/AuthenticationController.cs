@@ -14,15 +14,15 @@ namespace User.Management.API.Controllers
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
-        private readonly UserManager<RegistrationModel> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<Aspnetuser> _userManager;
+        private readonly SignInManager<Aspnetuser> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IEmailService _emailService;
         private readonly IConfiguration _configuration;
 
-        public AuthenticationController(UserManager<RegistrationModel> userManager,
+        public AuthenticationController(UserManager<Aspnetuser> userManager,
             RoleManager<IdentityRole> roleManager, IEmailService emailService,
-            SignInManager<IdentityUser> signInManager, IConfiguration configuration)
+            SignInManager<Aspnetuser> signInManager, IConfiguration configuration)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -32,7 +32,7 @@ namespace User.Management.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register([FromBody] Registration registerUser, string role)
+        public async Task<IActionResult> Register([FromBody] CustomerModel registerUser, string role)
         {
             //Check User Exist 
             var userExist = await _userManager.FindByEmailAsync(registerUser.Email);
@@ -43,15 +43,16 @@ namespace User.Management.API.Controllers
             }
 
             //Add the User in the database
-            RegistrationModel user = new()
+            Aspnetuser user = new()
             {
                 Email = registerUser.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
                 UserName = registerUser.LoginUser,
-                TwoFactorEnabled = true,
+                TwoFactorEnabled = false,
                 FirstName = registerUser.FirstName,
                 LastName = registerUser.LastName,
                 PhoneNumber = registerUser.PhoneNumber,
+                
                 
             };
             if (await _roleManager.RoleExistsAsync(role))

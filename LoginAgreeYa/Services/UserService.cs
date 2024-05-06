@@ -15,10 +15,10 @@ namespace LoginAgreeYa.Services
         }
 
 
-        public async Task<ResposeModel> AddUser(RegistrationModel registrationModel)
+        public async Task<ResposeModel> AddUser(CustomerModel CustomerModel)
         {
             _logger.LogInformation("******** call AddUser Service *********");
-            return await _UserRepo.AddUser(registrationModel).ConfigureAwait(false);
+            return await _UserRepo.AddUser(CustomerModel).ConfigureAwait(false);
         }
 
         public async Task<ResposeModel> DeleteUser(int id)
@@ -50,10 +50,10 @@ namespace LoginAgreeYa.Services
         }
     
 
-        public async Task<ResposeModel> UpdateUser(RegistrationModel registrationModel, int id)
+        public async Task<ResposeModel> UpdateUser(CustomerModel CustomerModel, int id)
         {
             _logger.LogInformation("******** call UpdateUser Service *********");
-            return await _UserRepo.UpdateUser(registrationModel, id).ConfigureAwait(false);
+            return await _UserRepo.UpdateUser(CustomerModel, id).ConfigureAwait(false);
         }
 
         public  ResposeModel Validating(string token)

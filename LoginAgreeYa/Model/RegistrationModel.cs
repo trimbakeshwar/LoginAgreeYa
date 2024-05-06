@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace LoginAgreeYa.Model
 {
-    public class RegistrationModel : IdentityUser
+    public class Aspnetuser : IdentityUser
     {
        
         public string?  FirstName { set; get; }
@@ -16,7 +16,7 @@ namespace LoginAgreeYa.Model
         public string Password { set; get; }
 
     }
-    public class Registration
+    public class CustomerModel
     {
         [Key]
         public int Id { set; get; }
