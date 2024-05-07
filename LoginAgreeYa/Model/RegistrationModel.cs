@@ -35,4 +35,9 @@ namespace LoginAgreeYa.Model
         public string? PhoneNumber { set; get; }
 
     }
+    public class RegisterViewModel
+    {
+        public Registration Registration { set; get; }
+        public string role { set; get; }
+    }
 }

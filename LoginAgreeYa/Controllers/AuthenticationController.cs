@@ -15,14 +15,14 @@ namespace User.Management.API.Controllers
     public class AuthenticationController : ControllerBase
     {
         private readonly UserManager<RegistrationModel> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly SignInManager<RegistrationModel> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IEmailService _emailService;
         private readonly IConfiguration _configuration;
 
         public AuthenticationController(UserManager<RegistrationModel> userManager,
             RoleManager<IdentityRole> roleManager, IEmailService emailService,
-            SignInManager<IdentityUser> signInManager, IConfiguration configuration)
+            SignInManager<RegistrationModel> signInManager, IConfiguration configuration)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -32,10 +32,11 @@ namespace User.Management.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register([FromBody] Registration registerUser, string role)
+        [Route("Register")]
+        public async Task<IActionResult> Register([FromBody] RegisterViewModel registerUser)
         {
             //Check User Exist 
-            var userExist = await _userManager.FindByEmailAsync(registerUser.Email);
+            var userExist = await _userManager.FindByEmailAsync(registerUser.Registration.Email);
             if (userExist != null)
             {
                 return StatusCode(StatusCodes.Status403Forbidden,
@@ -45,18 +46,18 @@ namespace User.Management.API.Controllers
             //Add the User in the database
             RegistrationModel user = new()
             {
-                Email = registerUser.Email,
+                Email = registerUser.Registration.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = registerUser.LoginUser,
+                UserName = registerUser.Registration.LoginUser,
                 TwoFactorEnabled = true,
-                FirstName = registerUser.FirstName,
-                LastName = registerUser.LastName,
-                PhoneNumber = registerUser.PhoneNumber,
+                FirstName = registerUser.Registration.FirstName,
+                LastName = registerUser.Registration.LastName,
+                PhoneNumber = registerUser.Registration.PhoneNumber,
                 
             };
-            if (await _roleManager.RoleExistsAsync(role))
+            if (await _roleManager.RoleExistsAsync(registerUser.role))
             {
-                var result = await _userManager.CreateAsync(user, registerUser.Password);
+                var result = await _userManager.CreateAsync(user, registerUser.Registration.Password);
                 if (!result.Succeeded)
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError,
@@ -64,7 +65,7 @@ namespace User.Management.API.Controllers
                 }
                 //Add role to the user....
 
-                await _userManager.AddToRoleAsync(user, role);
+                await _userManager.AddToRoleAsync(user, registerUser.role);
 
                 //Add Token to Verify the email....
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -105,7 +106,7 @@ namespace User.Management.API.Controllers
         }
 
         [HttpPost]
-        [Route("login")]
+        [Route("Login")]
         public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
         {
             var user = await _userManager.FindByNameAsync(loginModel.Username);
