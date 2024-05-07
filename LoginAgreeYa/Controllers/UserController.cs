@@ -1,12 +1,15 @@
 ﻿using LoginAgreeYa.Model;
 using LoginAgreeYa.Repository;
 using LoginAgreeYa.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace LoginAgreeYa.Controllers
 {
+
+    [Authorize(Roles ="HR")]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
@@ -42,7 +45,7 @@ namespace LoginAgreeYa.Controllers
         // POST api/<UserController>
         [HttpPost]
         [Route("AddUser")]
-        public async Task<IActionResult> AddUser([FromBody] RegistrationModel user)
+        public async Task<IActionResult> AddUser([FromBody] CustomerModel user)
         {
             _logger.LogInformation("******** call AddUser Api *********");
             return Ok(await _userService.AddUser(user).ConfigureAwait(false));
@@ -51,7 +54,7 @@ namespace LoginAgreeYa.Controllers
         // PUT api/<UserController>/5
         [HttpPut]
         [Route("UpdateUser/{id}")]
-        public async Task<IActionResult> UpdateUser(int id, [FromBody] RegistrationModel user)
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] CustomerModel user)
         {
             _logger.LogInformation("******** call UpdateUser Api *********");
             return Ok(await _userService.UpdateUser(user,id).ConfigureAwait(false));

@@ -14,15 +14,15 @@ namespace User.Management.API.Controllers
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
-        private readonly UserManager<RegistrationModel> _userManager;
-        private readonly SignInManager<RegistrationModel> _signInManager;
+        private readonly UserManager<Aspnetuser> _userManager;
+        private readonly SignInManager<Aspnetuser> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IEmailService _emailService;
         private readonly IConfiguration _configuration;
 
-        public AuthenticationController(UserManager<RegistrationModel> userManager,
+        public AuthenticationController(UserManager<Aspnetuser> userManager,
             RoleManager<IdentityRole> roleManager, IEmailService emailService,
-            SignInManager<RegistrationModel> signInManager, IConfiguration configuration)
+            SignInManager<Aspnetuser> signInManager, IConfiguration configuration)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -44,7 +44,7 @@ namespace User.Management.API.Controllers
             }
 
             //Add the User in the database
-            RegistrationModel user = new()
+            Aspnetuser user = new()
             {
                 Email = registerUser.Registration.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
@@ -53,6 +53,7 @@ namespace User.Management.API.Controllers
                 FirstName = registerUser.Registration.FirstName,
                 LastName = registerUser.Registration.LastName,
                 PhoneNumber = registerUser.Registration.PhoneNumber,
+                
                 
             };
             if (await _roleManager.RoleExistsAsync(registerUser.role))

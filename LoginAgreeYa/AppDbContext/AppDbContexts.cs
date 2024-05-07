@@ -2,32 +2,24 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace LoginAgreeYa.AppDbContext
 {
-    public class AppDbContexts : IdentityDbContext<IdentityUser>
+    public class AppDbContexts : IdentityDbContext
     {
         public AppDbContexts(DbContextOptions<AppDbContexts> options) : base(options)
         {
         }
     
-        public DbSet<RegistrationModel> Registration { get; set; }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer("Server=localhost\\MSSQLSERVER01;Database=EmployeeDB;Trusted_Connection=True;TrustServerCertificate=True");
-
-        }
+        public DbSet<CustomerModel> Customers { get; set; }
+        public DbSet<Aspnetuser> Aspnetuser { get; set; }
+       
+        
+       
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<RegistrationModel>()
-                .HasIndex(u => u.Email)
-                .IsUnique();
-            builder.Entity<RegistrationModel>()
-               .HasIndex(u => u.LoginUser)
-               .IsUnique();
-            builder.Entity<RegistrationModel>()
-               .HasIndex(u => u.PhoneNumber)
-               .IsUnique();
+            base.OnModelCreating(builder);
             SeedRoles(builder);
         }
         private static void SeedRoles(ModelBuilder builder)

@@ -25,15 +25,15 @@ namespace LoginAgreeYa.Repository
             _db = db;
             _logger = logger;
         }
-        public async Task<ResposeModel> AddUser(RegistrationModel registrationModel)
+        public async Task<ResposeModel> AddUser(CustomerModel CustomerModel)
         {
             _logger.LogInformation("*******call AddUser Repo Method******");
             ResposeModel resposeModel = new ResposeModel();
             try
             {
-                await _db.Registration.AddAsync(registrationModel).ConfigureAwait(false);
+                await _db.Customers.AddAsync(CustomerModel).ConfigureAwait(false);
                 var result = await _db.SaveChangesAsync().ConfigureAwait(false);
-                var userDetail = await _db.Registration.FindAsync(registrationModel.Id).ConfigureAwait(false);
+                var userDetail = await _db.Customers.FindAsync(CustomerModel.Id).ConfigureAwait(false);
                 if (result == 0)
                 {
                     resposeModel.IsSuccess = false;
@@ -69,9 +69,9 @@ namespace LoginAgreeYa.Repository
             try
             {
                 _logger.LogInformation("*******call DeleteUser Repo Method******");
-                var userDetail = await _db.Registration.FindAsync(id).ConfigureAwait(false);
+                var userDetail = await _db.Customers.FindAsync(id).ConfigureAwait(false);
                 _logger.LogInformation("find user from FindAsync method : {userDetail} ", userDetail);
-                _db.Registration.Remove(userDetail);
+                _db.Customers.Remove(userDetail);
                 var result = await _db.SaveChangesAsync().ConfigureAwait(false);
                 if (result == 0)
                 {
@@ -107,7 +107,7 @@ namespace LoginAgreeYa.Repository
             ResposeModel resposeModel = new ResposeModel();
             try
             {
-                var result = await _db.Registration.ToListAsync().ConfigureAwait(false);
+                var result = await _db.Customers.ToListAsync().ConfigureAwait(false);
                
                 if (result.Count == 0)
                 {
@@ -144,7 +144,7 @@ namespace LoginAgreeYa.Repository
             ResposeModel resposeModel = new ResposeModel();
             try
             {
-                var result = await _db.Registration.FindAsync(id);
+                var result = await _db.Customers.FindAsync(id);
                 if (result?.FirstName == null)
                 {
                     resposeModel.IsSuccess = true;
@@ -173,23 +173,23 @@ namespace LoginAgreeYa.Repository
             return resposeModel;
         }
 
-        public async Task<ResposeModel> UpdateUser(RegistrationModel registrationModel, int id)
+        public async Task<ResposeModel> UpdateUser(CustomerModel CustomerModel, int id)
         {
             _logger.LogInformation("*******call UpdateUser Repo Method******");
             ResposeModel resposeModel = new ResposeModel();
             try
             {
 
-                var userDetail = await _db.Registration.FindAsync(id).ConfigureAwait(false);
+                var userDetail = await _db.Customers.FindAsync(id).ConfigureAwait(false);
                 _logger.LogInformation("find user by id from FindAsync : {userDetail} ", userDetail);
-                userDetail.FirstName = registrationModel.FirstName;
-                userDetail.LastName = registrationModel.LastName;
-                userDetail.Email = registrationModel.Email;
-                userDetail.PhoneNumber = registrationModel.PhoneNumber;
-                userDetail.Password = registrationModel.Password;
-                userDetail.LoginUser = registrationModel.LoginUser;
+                userDetail.FirstName = CustomerModel.FirstName;
+                userDetail.LastName = CustomerModel.LastName;
+                userDetail.Email = CustomerModel.Email;
+                userDetail.PhoneNumber = CustomerModel.PhoneNumber;
+                userDetail.Password = CustomerModel.Password;
+                userDetail.LoginUser = CustomerModel.LoginUser;
                 _logger.LogInformation("map user model with db model : {userDetail} ", userDetail);
-                _db.Registration.Update(userDetail);
+                _db.Customers.Update(userDetail);
                 var result = await _db.SaveChangesAsync();
                 if (result == 0)
                 {
@@ -310,7 +310,7 @@ namespace LoginAgreeYa.Repository
             ResposeModel resposeModel = new ResposeModel();
             try
             {
-                var result = await _db.Registration.Where(x => x.LoginUser == username && x.Password == password).FirstOrDefaultAsync().ConfigureAwait(false);
+                var result = await _db.Customers.Where(x => x.LoginUser == username && x.Password == password).FirstOrDefaultAsync().ConfigureAwait(false);
                 _logger.LogInformation("find user by id from FindAsync : {result} ", result);
                 if (result?.FirstName == null)
                 {
