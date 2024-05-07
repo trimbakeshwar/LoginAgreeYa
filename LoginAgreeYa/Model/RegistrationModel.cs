@@ -16,6 +16,7 @@ namespace LoginAgreeYa.Model
         public string Password { set; get; }
 
     }
+
     public class CustomerModel
     {
         [Key]
@@ -37,7 +38,7 @@ namespace LoginAgreeYa.Model
     }
     public class RegisterViewModel
     {
-        public Registration Registration { set; get; }
+        public CustomerModel Registration { set; get; }
         public string role { set; get; }
     }
 }
