@@ -50,7 +50,7 @@ namespace User.Management.API.Controllers
                 Email = registerUser.Registration.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
                 UserName = registerUser.Registration.LoginUser,
-                TwoFactorEnabled = true,
+                TwoFactorEnabled = false,
                 FirstName = registerUser.Registration.FirstName,
                 LastName = registerUser.Registration.LastName,
                 PhoneNumber = registerUser.Registration.PhoneNumber,
@@ -139,12 +139,24 @@ namespace User.Management.API.Controllers
 
 
                 var jwtToken = GetToken(authClaims);
+               
+                
+                return
+                     Ok(
+                 new ResposeModel
+                 {
+                     IsSuccess = true,
+                     StatusCode = StatusCodes.Status200OK,
+                     Message = $"We have successfully login",
+                     Results = new
+                     {
+                         token = new JwtSecurityTokenHandler().WriteToken(jwtToken),
+                         expiration = jwtToken.ValidTo
+                     }
+                 }
+                     );
 
-                return Ok(new
-                {
-                    token = new JwtSecurityTokenHandler().WriteToken(jwtToken),
-                    expiration = jwtToken.ValidTo
-                });
+                    
                 //returning the token...
 
             }
